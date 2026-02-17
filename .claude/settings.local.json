@@ -1,0 +1,17 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(git fetch:*)",
+      "Bash(ls:*)",
+      "Bash(pwsh -NoProfile -Command \"./.specify/scripts/powershell/create-new-feature.ps1 -Json -Number 1 -ShortName ''pomodoro-timer'' ''基本番茄鐘：25/5 分鐘工作休息循環、倒數計時、開始暫停重置、音效提醒''\")",
+      "Bash(where.exe:*)",
+      "Bash(powershell.exe -NoProfile -Command \"./.specify/scripts/powershell/create-new-feature.ps1 -Json -Number 1 -ShortName ''pomodoro-timer'' ''基本番茄鐘：25/5 分鐘工作休息循環、倒數計時、開始暫停重置、音效提醒''\")",
+      "Bash(powershell.exe -NoProfile -Command \"./.specify/scripts/powershell/setup-plan.ps1 -Json\")",
+      "Bash(powershell.exe -NoProfile -Command \"./.specify/scripts/powershell/update-agent-context.ps1 -AgentType claude\")",
+      "Bash(powershell.exe -NoProfile -Command \"./.specify/scripts/powershell/check-prerequisites.ps1 -Json\")",
+      "Bash(powershell.exe -NoProfile -Command \"./.specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks\")",
+      "Bash(python:*)",
+      "Bash(pip install:*)"
+    ]
+  }
+}
