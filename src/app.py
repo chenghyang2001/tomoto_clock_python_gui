@@ -81,6 +81,30 @@ class PomodoroApp:
 
         self._settings_frame = settings_frame
 
+        # 音量設定區域
+        volume_frame = tk.Frame(self._root)
+        volume_frame.pack(pady=(8, 0))
+
+        tk.Label(volume_frame, text="音量", font=("Helvetica", 12)).pack(
+            side=tk.LEFT, padx=(0, 5)
+        )
+        self._volume_var = tk.IntVar(value=80)
+        self._volume_scale = tk.Scale(
+            volume_frame,
+            from_=0,
+            to=100,
+            orient=tk.HORIZONTAL,
+            variable=self._volume_var,
+            length=200,
+            showvalue=False,
+        )
+        self._volume_scale.pack(side=tk.LEFT)
+        self._volume_label = tk.Label(
+            volume_frame, text="80%", font=("Helvetica", 12), width=4
+        )
+        self._volume_label.pack(side=tk.LEFT, padx=(5, 0))
+        self._volume_var.trace_add("write", self._on_volume_change)
+
         # 模式顯示標籤
         self._mode_label = tk.Label(
             self._root,
@@ -120,6 +144,10 @@ class PomodoroApp:
             state=tk.DISABLED,
         )
         self._reset_button.pack(side=tk.LEFT, padx=5)
+
+    def _on_volume_change(self, *_args) -> None:
+        """當使用者調整音量滑桿時更新顯示。"""
+        self._volume_label.config(text=f"{self._volume_var.get()}%")
 
     def _on_duration_change(self) -> None:
         """當使用者調整時間設定時更新計時器。"""
@@ -200,7 +228,8 @@ class PomodoroApp:
     def _on_timer_finished(self) -> None:
         """計時結束時的處理：播放音效並自動切換模式。"""
         self._after_id = None
-        play_alert(self._root)
+        volume = self._volume_var.get() / 100.0
+        play_alert(self._root, volume=volume)
         self._timer.switch_mode()
         self._update_display()
 

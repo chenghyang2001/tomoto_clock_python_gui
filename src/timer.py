@@ -23,7 +23,7 @@ class Timer:
     """番茄鐘計時器，管理倒數計時的狀態與邏輯。"""
 
     def __init__(
-        self, work_duration: int = 1500, break_duration: int = 300
+        self, work_duration: int = 60, break_duration: int = 60
     ) -> None:
         self._work_duration = work_duration
         self._break_duration = break_duration
