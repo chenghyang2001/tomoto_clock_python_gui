@@ -39,6 +39,48 @@ class PomodoroApp:
 
     def _create_widgets(self) -> None:
         """建立所有 UI 元件。"""
+        # 時間設定區域
+        settings_frame = tk.Frame(self._root)
+        settings_frame.pack(pady=(15, 0))
+
+        tk.Label(settings_frame, text="工作", font=("Helvetica", 12)).grid(
+            row=0, column=0, padx=(0, 5)
+        )
+        self._work_min_var = tk.IntVar(value=self._timer.work_duration // 60)
+        self._work_spinbox = tk.Spinbox(
+            settings_frame,
+            from_=1,
+            to=120,
+            width=4,
+            font=("Helvetica", 12),
+            textvariable=self._work_min_var,
+            command=self._on_duration_change,
+        )
+        self._work_spinbox.grid(row=0, column=1)
+        tk.Label(settings_frame, text="分鐘", font=("Helvetica", 12)).grid(
+            row=0, column=2, padx=(2, 15)
+        )
+
+        tk.Label(settings_frame, text="休息", font=("Helvetica", 12)).grid(
+            row=0, column=3, padx=(0, 5)
+        )
+        self._break_min_var = tk.IntVar(value=self._timer.break_duration // 60)
+        self._break_spinbox = tk.Spinbox(
+            settings_frame,
+            from_=1,
+            to=60,
+            width=4,
+            font=("Helvetica", 12),
+            textvariable=self._break_min_var,
+            command=self._on_duration_change,
+        )
+        self._break_spinbox.grid(row=0, column=4)
+        tk.Label(settings_frame, text="分鐘", font=("Helvetica", 12)).grid(
+            row=0, column=5, padx=(2, 0)
+        )
+
+        self._settings_frame = settings_frame
+
         # 模式顯示標籤
         self._mode_label = tk.Label(
             self._root,
@@ -46,7 +88,7 @@ class PomodoroApp:
             font=("Helvetica", 20),
             fg="#D32F2F",
         )
-        self._mode_label.pack(pady=(20, 0))
+        self._mode_label.pack(pady=(10, 0))
 
         # 計時器顯示（大型 MM:SS）
         self._time_label = tk.Label(
@@ -79,6 +121,20 @@ class PomodoroApp:
         )
         self._reset_button.pack(side=tk.LEFT, padx=5)
 
+    def _on_duration_change(self) -> None:
+        """當使用者調整時間設定時更新計時器。"""
+        if self._timer.state != TimerState.IDLE:
+            return
+        try:
+            work_min = self._work_min_var.get()
+            break_min = self._break_min_var.get()
+        except (tk.TclError, ValueError):
+            return
+        work_min = max(1, min(120, work_min))
+        break_min = max(1, min(60, break_min))
+        self._timer.set_durations(work_min * 60, break_min * 60)
+        self._update_display()
+
     def _on_start_pause(self) -> None:
         """處理開始/暫停/繼續按鈕點擊。
 
@@ -98,6 +154,8 @@ class PomodoroApp:
         """處理重置按鈕點擊。"""
         self._cancel_tick()
         self._timer.reset()
+        self._work_min_var.set(self._timer.work_duration // 60)
+        self._break_min_var.set(self._timer.break_duration // 60)
         self._update_display()
 
     def _cancel_tick(self) -> None:
@@ -159,9 +217,15 @@ class PomodoroApp:
         if state == TimerState.IDLE:
             self._start_pause_button.config(text="開始")
             self._reset_button.config(state=tk.DISABLED)
+            self._work_spinbox.config(state="normal")
+            self._break_spinbox.config(state="normal")
         elif state == TimerState.RUNNING:
             self._start_pause_button.config(text="暫停")
             self._reset_button.config(state=tk.NORMAL)
+            self._work_spinbox.config(state="disabled")
+            self._break_spinbox.config(state="disabled")
         elif state == TimerState.PAUSED:
             self._start_pause_button.config(text="繼續")
             self._reset_button.config(state=tk.NORMAL)
+            self._work_spinbox.config(state="disabled")
+            self._break_spinbox.config(state="disabled")

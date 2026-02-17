@@ -78,6 +78,17 @@ class Timer:
         self._mode = TimerMode.WORK
         self._remaining_seconds = self._work_duration
 
+    def set_durations(self, work_duration: int, break_duration: int) -> None:
+        """設定工作與休息時長（秒），僅在 IDLE 狀態生效。"""
+        if self._state != TimerState.IDLE:
+            return
+        self._work_duration = work_duration
+        self._break_duration = break_duration
+        if self._mode == TimerMode.WORK:
+            self._remaining_seconds = work_duration
+        else:
+            self._remaining_seconds = break_duration
+
     def switch_mode(self) -> None:
         """切換工作/休息模式並重設時間。"""
         if self._mode == TimerMode.WORK:
