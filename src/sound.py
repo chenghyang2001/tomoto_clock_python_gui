@@ -5,18 +5,33 @@
 """
 
 import platform
+import threading
 
 
-def play_alert(widget=None) -> None:
-    """播放計時結束提示音效。
+def _beep_loop(duration_seconds: float, interval: float = 0.6) -> None:
+    """在背景執行緒中重複播放提示音，持續指定秒數。"""
+    import time
+    try:
+        import winsound
+    except ImportError:
+        return
+    end_time = time.monotonic() + duration_seconds
+    while time.monotonic() < end_time:
+        winsound.MessageBeep(winsound.MB_ICONEXCLAMATION)
+        time.sleep(interval)
 
-    嘗試 winsound（Windows 限定），失敗時使用 Tkinter bell。
-    widget 參數為 Tkinter widget 實例，用於呼叫 bell()。
+
+def play_alert(widget=None, duration: float = 5.0) -> None:
+    """播放計時結束提示音效，持續 duration 秒。
+
+    在 Windows 上以背景執行緒重複播放 MessageBeep，不阻塞 UI。
+    非 Windows 環境退回 Tkinter bell。
     """
     if platform.system() == "Windows":
         try:
-            import winsound
-            winsound.MessageBeep(winsound.MB_ICONEXCLAMATION)
+            import winsound  # noqa: F401
+            t = threading.Thread(target=_beep_loop, args=(duration,), daemon=True)
+            t.start()
             return
         except Exception:
             pass
