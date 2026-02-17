@@ -11,7 +11,8 @@
       "Bash(powershell.exe -NoProfile -Command \"./.specify/scripts/powershell/check-prerequisites.ps1 -Json\")",
       "Bash(powershell.exe -NoProfile -Command \"./.specify/scripts/powershell/check-prerequisites.ps1 -Json -RequireTasks -IncludeTasks\")",
       "Bash(python:*)",
-      "Bash(pip install:*)"
+      "Bash(pip install:*)",
+      "Bash(./dist/番茄時鐘.exe)"
     ]
   }
 }
